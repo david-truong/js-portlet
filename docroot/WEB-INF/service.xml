@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_0_0.dtd">
+
+<service-builder package-path="com.liferay.portlet.js">
+	<namespace>JS</namespace>
+	<entity name="JSEntry" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+		
+		<column name="jsEntryId" type="long" primary="true"/>
+
+		<!-- Audit fields -->
+
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="js" type="String" />
+		<column name="classNameId" type="long" />
+		<column name="classPK" type="long" />
+		<column name="groupId" type="long" />
+		<column name="version" type="double" />
+		<column name="status" type="int" />
+		<column name="statusDate" type="Date" />
+		
+		<!-- Order -->
+		
+		<order by="desc">
+			<order-column name="classNameId" />
+			<order-column name="classPK" />
+			<order-column name="version" />
+		</order>
+				
+		<!-- Finder methods -->
+		
+		<finder name="GroupId" return-type="Collection" >
+			<finder-column name="groupId" />
+		</finder>
+
+		<finder name="ClassNameId_ClassPK" return-type="Collection" >
+			<finder-column name="classNameId" />
+			<finder-column name="classPK" />
+		</finder>
+		
+		<finder name="ClassNameId_ClassPK_Version" return-type="JSEntry" unique="true">
+			<finder-column name="classNameId" />
+			<finder-column name="classPK" />
+			<finder-column name="version" />
+		</finder>		
+	</entity>
+</service-builder>

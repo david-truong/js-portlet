@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<custom-sql>
+	<sql id="com.tbb.myaccount.service.persistence.UserFieldTrackerFinder.findTypeForDate">
+		<![CDATA[
+			
+			SELECT 
+				UFT.*
+			FROM 
+				MyAccount_UserFieldTracker UFT
+			WHERE 
+				type_ = ?
+			AND 
+				createDate >= ?
+			AND 
+				createDate < ?
+		]]>
+	</sql>
+</custom-sql>

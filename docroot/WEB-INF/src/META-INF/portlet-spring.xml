@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-destroy-method="destroy" default-init-method="afterPropertiesSet" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	<bean id="com.liferay.portlet.js.service.JSEntryLocalService" class="com.liferay.portlet.js.service.impl.JSEntryLocalServiceImpl" />
+	<bean id="com.liferay.portlet.js.service.JSEntryLocalServiceUtil" class="com.liferay.portlet.js.service.JSEntryLocalServiceUtil">
+		<property name="service" ref="com.liferay.portlet.js.service.JSEntryLocalService" />
+	</bean>
+	<bean id="com.liferay.portlet.js.service.JSEntryService" class="com.liferay.portlet.js.service.impl.JSEntryServiceImpl" />
+	<bean id="com.liferay.portlet.js.service.JSEntryServiceUtil" class="com.liferay.portlet.js.service.JSEntryServiceUtil">
+		<property name="service" ref="com.liferay.portlet.js.service.JSEntryService" />
+	</bean>
+	<bean id="com.liferay.portlet.js.service.persistence.JSEntryPersistence" class="com.liferay.portlet.js.service.persistence.JSEntryPersistenceImpl" parent="basePersistence" />
+</beans>

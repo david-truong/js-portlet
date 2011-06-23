@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.liferay.portlet.js.model.JSEntry">
+		<field name="uuid" type="String" />
+		<field name="jsEntryId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="js" type="String">
+			<hint-collection name="CLOB" />
+		</field>
+		<field name="classNameId" type="long" />
+		<field name="classPK" type="long" />
+		<field name="groupId" type="long" />
+		<field name="version" type="double" />
+		<field name="status" type="int" />
+		<field name="statusDate" type="Date" />
+	</model>
+</model-hints>

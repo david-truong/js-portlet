@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<custom-sql>
+	<sql id="com.liferay.portlet.service.persistence.JSEntryFinder.removeByPrimaryKeys">
+		<![CDATA[
+			
+			DELETE 
+				JE.*
+			FROM 
+				JS_JSEntry JE
+			WHERE	
+				jsEntryId IN ?
+		]]>
+	</sql>
+</custom-sql>

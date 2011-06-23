@@ -1,0 +1,213 @@
+<%
+long classNameId = ParamUtil.getLong(request, "classNameId");
+long classPK = ParamUtil.getLong(request, "classPK");
+long groupId = ParamUtil.getLong(request, "groupId");
+
+if (classNameId == 0 || classPK == 0) {
+	if (tabs1.equals("site")) {
+		classNameId = PortalUtil.getClassNameId(LayoutSet.class);
+		if (!isControlPanel) {
+			classPK = themeDisplay.getLayout().getLayoutSet().getPrimaryKey();
+		}
+		else {
+			if (tabs2.equals("public")) {
+				classPK = scopeGroup.getPublicLayoutSet().getLayoutSetId();
+			}
+			else {
+				classPK = scopeGroup.getPrivateLayoutSet().getLayoutSetId();
+			}
+		}
+		groupId = scopeGroup.getGroupId();
+	}
+	else if (tabs1.equals("global")){
+		classNameId = PortalUtil.getClassNameId(Company.class);
+		classPK = themeDisplay.getCompanyId();
+	}
+	else {
+		classNameId = PortalUtil.getClassNameId(Layout.class);
+		classPK = themeDisplay.getPlid();
+		groupId = themeDisplay.getScopeGroupId();
+	}
+}
+
+List<JSEntry> jsEntries = null;
+
+try {
+	jsEntries = JSEntryLocalServiceUtil.getJSEntry(classNameId, classPK);
+}
+catch (Exception e) {}
+
+//JSEntry jsEntry1 = null;
+//JSEntry jsEntry2 = null;
+
+String js1 = "";
+String js2 = "";
+
+double version1 = ParamUtil.getDouble(request, "version1");
+double version2 = ParamUtil.getDouble(request, "version2");
+
+List<Double> versions = new ArrayList<Double>(jsEntries.size());
+
+for (int i = jsEntries.size()-1; i >= 0; i--) {
+	JSEntry jsEntry = jsEntries.get(i);
+	versions.add(jsEntry.getVersion());
+
+	if (version1 == jsEntry.getVersion()) {
+		//jsEntry1 = jsEntry;
+		js1 = jsEntry.getJs();
+	}
+
+	if (version2 == jsEntry.getVersion()) {
+		//jsEntry2 = jsEntry;
+		js2 = jsEntry.getJs();
+	}
+}
+
+PortletURL currentURL = renderResponse.createRenderURL();
+
+currentURL.setParameter("tabs1", tabs1);
+currentURL.setParameter("tabs2", tabs2);
+currentURL.setParameter("tabs3", tabs3);
+currentURL.setParameter("classNameId", Long.toString(classNameId));
+currentURL.setParameter("classPK", Long.toString(classPK));
+currentURL.setParameter("version1", Double.toString(version1));
+currentURL.setParameter("version2", Double.toString(version2));
+
+//boolean diff = ParamUtil.getBoolean(request, "diff", true);
+boolean diff = version1 > 0 && version2 > 0;
+
+List<DiffResult>[] diffResults = null;
+
+if (diff) {
+
+	try {
+		InputStream sourceIs = new UnsyncByteArrayInputStream(
+			js1.getBytes(StringPool.UTF8));
+		InputStream targetIs = new UnsyncByteArrayInputStream(
+			js2.getBytes(StringPool.UTF8));
+		
+		diffResults = DiffUtil.diff(
+			new InputStreamReader(sourceIs), new InputStreamReader(targetIs));
+	}
+	catch (Exception e) {}
+}
+
+%>
+
+<div>
+	Compare
+	<select onchange="changeVersion(this.value)">
+		<option value=""></option>
+		<%
+		for (double version : versions) {
+			currentURL.setParameter("version1", Double.toString(version));
+		%>
+			<option value="<%= currentURL.toString() %>" <%= version == version1 ? "selected" : "" %>>
+				<%= version %>
+			</option>
+		<%
+		}
+		currentURL.setParameter("version1", Double.toString(version1));
+		%>
+	</select>
+	to
+	<select onchange="changeVersion(this.value)">
+		<option value=""></option>
+		<%
+		for (double version : versions) {
+			currentURL.setParameter("version2", Double.toString(version));
+		%>
+			<option value="<%= currentURL.toString() %>" <%= version == version2 ? "selected" : "" %>>
+				<%= version %>
+			</option>
+		<%
+		}
+		currentURL.setParameter("version2", Double.toString(version2));
+		%>
+	</select>
+</div>
+
+<br />
+
+<c:if test="<%= diff %>">
+	<div>
+		<liferay-ui:diff
+			diffResults="<%= diffResults %>"
+			sourceName="<%= Double.toString(version1) %>"
+			targetName="<%= Double.toString(version2) %>"
+		/>
+	</div>
+
+	<div>
+		<form name="<portlet:namespace/>fm_history" action="<portlet:actionURL name="updateJS" />" method="post">
+			<input name="<portlet:namespace />cmd" type="hidden" value="">
+			<input name="<portlet:namespace />version" type="hidden" value="">
+			<input name="<portlet:namespace />groupId" type="hidden" value="<%= groupId %>">
+			<input name="<portlet:namespace />classNameId" type="hidden" value="<%= classNameId %>">
+			<input name="<portlet:namespace />classPK" type="hidden" value="<%= classPK %>">
+			<input name="<portlet:namespace />redirect" type="hidden" value="<%= currentURL %>">
+			<input name="<portlet:namespace />js" type="hidden" value="">
+		
+			<table class="lfr-table" width="100%">
+				<tr>
+					<td>
+						<textarea name="<portlet:namespace />js1" style="height:300px; width: 100%"><%= js1 %></textarea>
+					</td>
+					<td>
+						<textarea name="<portlet:namespace />js2" style="height:300px; width: 100%"><%= js2 %></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="button" value="Save" onClick="<portlet:namespace />saveJSVersion(1);" />
+						<input type="button" value="Delete Version" onClick="<portlet:namespace />deleteJSVersion(1);" />
+					</td>
+					<td>
+						<input type="button" value="Save" onClick="<portlet:namespace />saveJSVersion(2);" />
+						<input type="button" value="Delete Version" onClick="<portlet:namespace />deleteJSVersion(2);" />
+					</td>
+				</tr>
+			</table>
+		
+		</form>
+	</div>
+</c:if>
+
+
+<script>
+	function changeVersion(url) {
+		document.location = url;
+	}
+
+	function <portlet:namespace />saveJSVersion(version) {
+		var form = document.<portlet:namespace />fm_history;
+
+		form.<portlet:namespace />cmd.value = "save";
+
+		if (version == 1) {
+			form.<portlet:namespace />js.value = form.<portlet:namespace />js1.value;
+			form.<portlet:namespace />version.value = <%= version1 %>;
+		}
+		else {
+			form.<portlet:namespace />js.value = form.<portlet:namespace />js2.value;
+			form.<portlet:namespace />version.value = <%= version2 %>;
+		}
+
+		submitForm(form);
+	}
+
+	function <portlet:namespace />deleteJSVersion(version) {
+		var form = document.<portlet:namespace />fm_history;
+
+		form.<portlet:namespace />cmd.value = "delete";
+
+		if (version == 1) {
+			form.<portlet:namespace />version.value = <%= version1 %>;
+		}
+		else {
+			form.<portlet:namespace />version.value = <%= version2 %>;
+		}
+
+		submitForm(form);
+	}
+</script>

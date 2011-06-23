@@ -1,0 +1,98 @@
+<%
+long classNameId = 0;
+long classPK = 0;
+
+if (tabs1.equals("site")) {
+	classNameId = PortalUtil.getClassNameId(LayoutSet.class);
+	if (!isControlPanel) {
+		classPK = themeDisplay.getLayout().getLayoutSet().getPrimaryKey();
+	}
+	else {
+		if (tabs2.equals("public")) {
+			classPK = scopeGroup.getPublicLayoutSet().getLayoutSetId();
+		}
+		else {
+			classPK = scopeGroup.getPrivateLayoutSet().getLayoutSetId();
+		}
+	}
+}
+else if (tabs1.equals("global")){
+	classNameId = PortalUtil.getClassNameId(Company.class);
+	classPK = themeDisplay.getCompanyId();
+}
+else {
+	classNameId = PortalUtil.getClassNameId(Layout.class);
+	classPK = themeDisplay.getPlid();
+}
+
+JSEntry jsEntry = null;
+
+try {
+	jsEntry = JSEntryLocalServiceUtil.getLatestJSEntry(classNameId, classPK);
+}
+catch (Exception e) {}
+
+double version = JSUtil.NEW_VERSION;
+String js = "";
+
+if (jsEntry != null) {
+	version = jsEntry.getVersion();
+	js = jsEntry.getJs();
+}
+
+String backURL = PortalUtil.getLayoutURL(layout, themeDisplay);
+
+PortletURL redirect = renderResponse.createRenderURL();
+redirect.setParameter("returnToFullPageURL", backURL);
+
+redirect.setParameter("tabs1", tabs1);
+redirect.setParameter("tabs2", tabs2);
+redirect.setParameter("tabs3", tabs3);
+%>
+
+<form name="<portlet:namespace/>fm" action="<portlet:actionURL name="updateJS" />" method="post">
+	<input name="<portlet:namespace />cmd" type="hidden" value="">
+	<input name="<portlet:namespace />version" type="hidden" value="<%= version %>">
+	<input name="<portlet:namespace />classNameId" type="hidden" value="<%= classNameId %>">
+	<input name="<portlet:namespace />classPK" type="hidden" value="<%= classPK %>">
+	<input name="<portlet:namespace />redirect" type="hidden" value="<%= redirect %>">
+
+	<div>
+		Version: <%= version %>
+	</div>
+
+	<br />
+
+	<div>
+		<textarea name="<portlet:namespace />js" rows="20" cols="120"><%= js %></textarea>
+	</div>
+
+	<br />
+
+	<c:choose>
+		<c:when test="<%= jsEntry != null %>">
+			<input type="button" value="Save" onClick="<portlet:namespace />saveJS('save');">
+			<input type="button" value="Save New Version" onClick="<portlet:namespace />saveJS('increment');">
+		</c:when>
+		<c:otherwise>
+			<input type="button" value="Save New Version" onClick="<portlet:namespace />saveJS('new');">
+		</c:otherwise>
+	</c:choose>
+	
+	<input type="button" value="Delete Version" onClick="<portlet:namespace />deleteJS();">
+</form>
+
+<script>
+	function <portlet:namespace />saveJS(cmd) {
+		var form = document.<portlet:namespace />fm;
+		form.<portlet:namespace />cmd.value = cmd;
+
+		submitForm(form);
+	}
+
+	function <portlet:namespace />deleteJS() {
+		var form = document.<portlet:namespace />fm;
+		form.<portlet:namespace />cmd.value = "delete";
+		submitForm(form);
+	}
+</script>

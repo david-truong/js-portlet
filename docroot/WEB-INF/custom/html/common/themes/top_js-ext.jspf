@@ -1,0 +1,5 @@
+<c:if test="<%= !layout.getGroup().isControlPanel() %>">
+	<script type="text/javascript" src="<%= PortalUtil.getPortalURL(request) %>/js-portlet/global.js"></script>
+	<script type="text/javascript" src="<%= PortalUtil.getPortalURL(request) %>/js-portlet/site.js?privateLayout=<%= themeDisplay.getLayout().isPrivateLayout() %>&groupId=<%= themeDisplay.getScopeGroupId() %>"></script>
+	<script type="text/javascript" src="<%= PortalUtil.getPortalURL(request) %>/js-portlet/page.js?plid=<%= themeDisplay.getPlid() %>"></script>
+</c:if>

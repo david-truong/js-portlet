@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/tbbportal/!svn/ver/6256/trunk/liferay/plugins/portlets/my-account-portlet/docroot/WEB-INF/src/custom-sql
+END
+userfieldtracker.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/tbbportal/!svn/ver/6256/trunk/liferay/plugins/portlets/my-account-portlet/docroot/WEB-INF/src/custom-sql/userfieldtracker.xml
+END
+default.xml
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/tbbportal/!svn/ver/6139/trunk/liferay/plugins/portlets/my-account-portlet/docroot/WEB-INF/src/custom-sql/default.xml
+END
